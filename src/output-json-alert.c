@@ -655,6 +655,8 @@ static int AlertJsonDecoderEvent(ThreadVars *tv, JsonAlertLogThread *aft, const 
         /* time & tx */
         json_object_set_new(js, "timestamp", json_string(timebuf));
 
+        printf("hello world");
+
         /* tuple */
         //json_object_set_new(js, "srcip", json_string(srcip));
         //json_object_set_new(js, "sp", json_integer(p->sp));
