@@ -329,6 +329,7 @@ void AlertJsonHeader(void *ctx, const Packet *p, const PacketAlert *pa, json_t *
     json_object_set_new(ajs, "category",
             SCJsonString((pa->s->class_msg) ? pa->s->class_msg : ""));
     json_object_set_new(ajs, "severity", json_integer(pa->s->prio));
+    SCLogNotice("!!!!!!!!!!!2");
 
     if (p->tenant_id > 0)
         json_object_set_new(ajs, "tenant_id", json_integer(p->tenant_id));
@@ -673,6 +674,8 @@ static int AlertJsonDecoderEvent(ThreadVars *tv, JsonAlertLogThread *aft, const 
         json_object_set_new(ajs, "category",
                             json_string((pa->s->class_msg) ? pa->s->class_msg : ""));
         json_object_set_new(ajs, "severity", json_integer(pa->s->prio));
+        SCLogNotice("!!!!!!!!!!!3");
+
 
         if (p->tenant_id > 0)
             json_object_set_new(ajs, "tenant_id", json_integer(p->tenant_id));
