@@ -290,6 +290,20 @@ static void AlertJsonMetadata(AlertJsonOutputCtx *json_output_ctx, const PacketA
     }
 }
 
+static void mac2String(uint8_t *mac , char *macResStr)
+{
+    int pos = 0;
+    for (int i = 0; i < 6; i++)
+    {
+        char buf[4];
+        sprintf(buf, "%2X", mac[i]);
+        if (buf[0] == ' ') buf[0] = '0';
+        if (i<5) buf[2] = ':'; 
+        buf[3] = 0;
+        strcpy (&macResStr[pos], buf);
+        pos += 3;
+    }
+}
 
 void AlertJsonHeader(void *ctx, const Packet *p, const PacketAlert *pa, json_t *js,
                      uint16_t flags)
@@ -329,8 +343,6 @@ void AlertJsonHeader(void *ctx, const Packet *p, const PacketAlert *pa, json_t *
     json_object_set_new(ajs, "category",
             SCJsonString((pa->s->class_msg) ? pa->s->class_msg : ""));
     json_object_set_new(ajs, "severity", json_integer(pa->s->prio));
-    json_object_set_new(ajs, "nikitich", json_integer(123));
-    SCLogNotice("!!!!!!!!!!!2");
 
     if (p->tenant_id > 0)
         json_object_set_new(ajs, "tenant_id", json_integer(p->tenant_id));
@@ -421,6 +433,15 @@ static int AlertJson(ThreadVars *tv, JsonAlertLogThread *aft, const Packet *p)
 
         if (IS_TUNNEL_PKT(p)) {
             AlertJsonTunnel(p, js);
+        }
+
+        if (p->ethh) {
+            char data[6*2+5+2];
+            mac2String(p->ethh->eth_dst ,data);
+            json_object_set_new(js, "eth_dst", json_string(data));
+
+            mac2String(p->ethh->eth_src ,data);
+            json_object_set_new(js, "eth_src", json_string(data));
         }
 
         if (json_output_ctx->flags & LOG_JSON_APP_LAYER && p->flow != NULL) {
